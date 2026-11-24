@@ -1,9 +1,9 @@
 cask "markread" do
   arch arm: "arm64", intel: "x86_64"
 
-  version "0.1.2"
-  sha256 arm:   "3f8d68aedf884341c7918df018ed9e024948534449ad3b60c02360f705dcf782",
-         intel: "8451d7cc3383963e60141d1c9dce991dc61575f9f3d3953efe1d862a80d9577f"
+  version "0.1.3"
+  sha256 arm:   "132228cad1ef6a381285b7693f743c9382d510142216ff5cd0f22def86e22397",
+         intel: "16a5111ca04308375b2c320d8b1b3b7be79156e4a82a2bcc987a4c4663ea2c2b"
 
   url "https://github.com/tluo-github/markread/releases/download/v#{version}/MarkRead-#{version}-#{arch}.zip"
   name "MarkRead"

@@ -15,6 +15,28 @@
 - **文件变动热刷新**：外部编辑器修改 `.md` 后自动刷新并保持当前滚动位置
 - **导出 PDF & HTML**：支持从菜单栏直接导出 PDF（`⌘⇧P`）与独立 HTML（`⌘⇧E`）
 
+## 安装与下载
+
+### macOS（Homebrew，推荐）
+
+已通过 Apple Developer ID 签名与公证，安装后直接双击打开：
+
+```bash
+brew tap tluo-github/markread https://github.com/tluo-github/markread
+brew install --cask markread
+```
+
+升级：`brew upgrade --cask markread` · 卸载：`brew uninstall --cask markread`
+
+### 直接下载安装包（macOS & Windows）
+
+前往 [GitHub Releases](https://github.com/tluo-github/markread/releases/latest) 下载：
+
+- **macOS (Apple Silicon)**：`MarkRead-0.1.0-arm64.dmg`
+- **macOS (Intel)**：`MarkRead-0.1.0-x86_64.dmg`
+- **Windows 安装版（自动关联 `.md`）**：`MarkRead_0.1.0_x64-setup.exe` 或 `.msi`
+- **Windows 免安装便携版**：`MarkRead-portable-x64.exe`
+
 ## 跨平台目录结构
 
 - `shared/web/`：macOS 与 Windows 100% 共享的离线排版与语法高亮引擎（`markdown-it` + `Highlight.js` + 5 套 Typora 风格主题）

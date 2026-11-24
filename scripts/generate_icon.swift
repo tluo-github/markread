@@ -1,6 +1,7 @@
 #!/usr/bin/env swift
 import AppKit
 import CoreGraphics
+import CoreText
 import Foundation
 
 let rootDir = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : FileManager.default.currentDirectoryPath)
@@ -61,25 +62,24 @@ func renderMasterIcon() -> NSBitmapImageRep {
     let cornerRadius: CGFloat = 186
     let squirclePath = makeSquirclePath(in: iconRect, radius: cornerRadius)
 
-    // 1. Ambient macOS drop shadow
+    // 1. Soft macOS drop shadow
     ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -14), blur: 28, color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.34))
+    ctx.setShadow(offset: CGSize(width: 0, height: -10), blur: 24, color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.22))
     ctx.addPath(squirclePath)
-    ctx.setFillColor(CGColor(red: 0.08, green: 0.10, blue: 0.14, alpha: 1.0))
+    ctx.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1.0))
     ctx.fillPath()
     ctx.restoreGState()
 
-    // 2. Clip to squircle and draw rich obsidian-slate editorial gradient
+    // 2. Clip to squircle and fill with a clean white (very faint top-to-bottom falloff)
     ctx.saveGState()
     ctx.addPath(squirclePath)
     ctx.clip()
 
     let bgColors = [
-        CGColor(red: 0.165, green: 0.196, blue: 0.255, alpha: 1.0), // Top: #2A3241
-        CGColor(red: 0.102, green: 0.122, blue: 0.161, alpha: 1.0), // Mid: #1A1F29
-        CGColor(red: 0.067, green: 0.082, blue: 0.110, alpha: 1.0)  // Bot: #11151C
+        CGColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.0), // Top: #FFFFFF
+        CGColor(red: 0.957, green: 0.961, blue: 0.969, alpha: 1.0)  // Bot: #F4F5F7
     ] as CFArray
-    let bgGradient = CGGradient(colorsSpace: colorSpace, colors: bgColors, locations: [0.0, 0.52, 1.0])!
+    let bgGradient = CGGradient(colorsSpace: colorSpace, colors: bgColors, locations: [0.0, 1.0])!
     ctx.drawLinearGradient(
         bgGradient,
         start: CGPoint(x: canvasSize / 2, y: iconRect.maxY),
@@ -87,103 +87,34 @@ func renderMasterIcon() -> NSBitmapImageRep {
         options: []
     )
 
-    // Subtle upper ambient glow (startRadius: 0 so center blends smoothly)
-    let glowColors = [
-        CGColor(red: 0.345, green: 0.651, blue: 1.0, alpha: 0.15),
-        CGColor(red: 0.345, green: 0.651, blue: 1.0, alpha: 0.0)
-    ] as CFArray
-    let glowGradient = CGGradient(colorsSpace: colorSpace, colors: glowColors, locations: [0.0, 1.0])!
-    ctx.drawRadialGradient(
-        glowGradient,
-        startCenter: CGPoint(x: canvasSize * 0.5, y: iconRect.maxY - 90),
-        startRadius: 0,
-        endCenter: CGPoint(x: canvasSize * 0.5, y: iconRect.maxY - 90),
-        endRadius: 540,
-        options: [.drawsAfterEndLocation]
-    )
-
-    // Subtle editorial margin frame inside the dark card (like a refined dark book page)
-    let pageRect = iconRect.insetBy(dx: 56, dy: 56)
-    let pagePath = makeSquirclePath(in: pageRect, radius: 132)
-    ctx.addPath(pagePath)
-    ctx.setStrokeColor(CGColor(red: 1, green: 1, blue: 1, alpha: 0.06))
-    ctx.setLineWidth(2.5)
-    ctx.strokePath()
-
-    // 3. Centerpiece Serif "M" (paying tribute to Typora's editorial typography for MarkRead)
-    let font = NSFont(name: "Georgia", size: 448)
-        ?? NSFont(name: "Baskerville", size: 460)
-        ?? NSFont.systemFont(ofSize: 440, weight: .semibold)
+    // 3. Centerpiece serif "M"
+    let font = NSFont(name: "Georgia", size: 500)
+        ?? NSFont(name: "Baskerville", size: 512)
+        ?? NSFont.systemFont(ofSize: 480, weight: .semibold)
 
     let glyphStr = NSAttributedString(
         string: "M",
         attributes: [
             .font: font,
-            .foregroundColor: NSColor(calibratedRed: 0.96, green: 0.97, blue: 0.99, alpha: 1.0)
+            .foregroundColor: NSColor(calibratedRed: 0.098, green: 0.110, blue: 0.133, alpha: 1.0) // #191C22
         ]
     )
-    let textSize = glyphStr.size()
-    let textX = (canvasSize - textSize.width) / 2.0
-    let textY = (canvasSize - textSize.height) / 2.0 + 66.0
+    // Center on the glyph's actual ink bounds, not the line box
+    let line = CTLineCreateWithAttributedString(glyphStr)
+    let ink = CTLineGetImageBounds(line, ctx)
+    let textX = (canvasSize - ink.width) / 2.0 - ink.minX
+    let textY = (canvasSize - ink.height) / 2.0 - ink.minY
+    ctx.textPosition = CGPoint(x: textX, y: textY)
+    CTLineDraw(line, ctx)
 
+    // 4. Hairline rim so the white tile still reads on white backgrounds
     ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -14), blur: 28, color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.45))
-    glyphStr.draw(at: NSPoint(x: textX, y: textY))
-    ctx.restoreGState()
-
-    // 4. Syntax-highlight trio bar beneath the "T" (MarkRead's syntax-highlighting signature)
-    let barY: CGFloat = iconRect.minY + 132
-    let barHeight: CGFloat = 24
-    let barRadius: CGFloat = barHeight / 2
-    let gap: CGFloat = 22
-
-    struct TokenBar {
-        let width: CGFloat
-        let color: CGColor
-    }
-
-    let bars: [TokenBar] = [
-        TokenBar(width: 94, color: CGColor(red: 1.000, green: 0.482, blue: 0.447, alpha: 1.0)),  // Coral keyword (#FF7B72)
-        TokenBar(width: 176, color: CGColor(red: 0.345, green: 0.651, blue: 1.000, alpha: 1.0)), // Sky blue (#58A6FF)
-        TokenBar(width: 112, color: CGColor(red: 0.824, green: 0.659, blue: 1.000, alpha: 1.0))  // Soft lavender (#D2A8FF)
-    ]
-
-    let totalBarWidth = bars.reduce(0) { $0 + $1.width } + gap * CGFloat(bars.count - 1)
-    var curX = (canvasSize - totalBarWidth) / 2.0
-
-    for bar in bars {
-        let rect = CGRect(x: curX, y: barY, width: bar.width, height: barHeight)
-        let pill = CGPath(roundedRect: rect, cornerWidth: barRadius, cornerHeight: barRadius, transform: nil)
-        ctx.saveGState()
-        ctx.setShadow(offset: .zero, blur: 18, color: bar.color.copy(alpha: 0.45))
-        ctx.addPath(pill)
-        ctx.setFillColor(bar.color)
-        ctx.fillPath()
-        ctx.restoreGState()
-        curX += bar.width + gap
-    }
-
-    // 5. Crisp inner rim specular highlight along squircle border
-    ctx.saveGState()
-    let borderRect = iconRect.insetBy(dx: 2, dy: 2)
-    let borderPath = makeSquirclePath(in: borderRect, radius: cornerRadius - 2)
+    let borderRect = iconRect.insetBy(dx: 1, dy: 1)
+    let borderPath = makeSquirclePath(in: borderRect, radius: cornerRadius - 1)
     ctx.addPath(borderPath)
-    ctx.setLineWidth(4.0)
-    ctx.replacePathWithStrokedPath()
-    ctx.clip()
-
-    let rimColors = [
-        CGColor(red: 1, green: 1, blue: 1, alpha: 0.24),
-        CGColor(red: 1, green: 1, blue: 1, alpha: 0.06),
-        CGColor(red: 1, green: 1, blue: 1, alpha: 0.03)
-    ] as CFArray
-    let rimGradient = CGGradient(colorsSpace: colorSpace, colors: rimColors, locations: [0.0, 0.45, 1.0])!
-    ctx.drawLinearGradient(
-        rimGradient,
-        start: CGPoint(x: canvasSize / 2, y: iconRect.maxY),
-        end: CGPoint(x: canvasSize / 2, y: iconRect.minY),
-        options: []
-    )
+    ctx.setLineWidth(2.0)
+    ctx.setStrokeColor(CGColor(red: 0, green: 0, blue: 0, alpha: 0.08))
+    ctx.strokePath()
     ctx.restoreGState()
 
     ctx.restoreGState() // End squircle clip

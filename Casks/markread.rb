@@ -10,7 +10,7 @@ cask "markread" do
   desc "Minimal, free and offline Markdown reader with Highlight.js syntax highlighting and Quick Look"
   homepage "https://github.com/tluo-github/markread"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "MarkRead.app"
 

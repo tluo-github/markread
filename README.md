@@ -1,73 +1,84 @@
+<img src="docs/icon.png" width="96" alt="MarkRead icon">
+
 # MarkRead
 
-**MarkRead** 是一个免费、完全离线、无需注册的 macOS 原生 Markdown 本地阅读器，致敬 Typora 的排版美学，专注于纯粹舒适的文档阅读体验。
+**A minimal, free & offline Markdown reader for macOS and Windows, inspired by Typora's typography aesthetics.**
 
-## 特性
+English | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-- **原生 macOS 体验**：基于 SwiftUI + WKWebView 构建，启动快、体积小、零网络请求
-- **Finder 空格预览（Quick Look）**：内置原生 `MarkReadQuickLook` 扩展，在访达选中任意 `.md` 按空格即可秒开高亮排版预览（支持自动跟随系统深浅色）
-- **Typora 风格排版主题**：内置 **GitHub (Auto)**、**GitHub Light**、**Night**、**Newsprint**、**Vue** 五套主题
-- **离线语法高亮**：内置 `Highlight.js`（35+ 常用编程语言离线支持）与一键复制代码
-- **完整 GFM 渲染**：支持表格、任务列表、删除线、Callout 提示卡片、`==荧光高亮==`、本地相对路径图片（含点击大图灯箱）与文档间相对链接跳转
-- **YAML Front Matter**：支持快捷键 `⌘⇧M` 隐藏或优雅展示文档元信息
-- **目录大纲（TOC）**：可折叠原生侧边栏（`⌘⇧O`），滚动自动同步当前章节并统计字数与阅读时间
-- **文内搜索**：`⌘F` 高亮匹配项并支持 `⌘G` / `⇧⌘G` 快速跳转
-- **文件变动热刷新**：外部编辑器修改 `.md` 后自动刷新并保持当前滚动位置
-- **导出 PDF & HTML**：支持从菜单栏直接导出 PDF（`⌘⇧P`）与独立 HTML（`⌘⇧E`）
+MarkRead focuses purely on comfortable, distraction-free local Markdown reading — no account, no subscription, no network requests. Everything renders locally on your machine with crisp typography, offline Highlight.js syntax highlighting, and native OS integration.
 
-## 安装与下载
+## Features
 
-### macOS（Homebrew，推荐）
+- **Native & Lightweight**: Pure SwiftUI + WebKit on macOS (~2.5 MB) and Tauri v2 + WebView2 on Windows (~2.2 MB installer), with instant launch and zero network access
+- **Finder Quick Look (macOS)**: Built-in `MarkReadQuickLook` extension — press Spacebar on any `.md` file in Finder for an instant formatted preview with syntax highlighting
+- **5 Typora-Inspired Themes**: **GitHub (Auto Light/Dark)**, **GitHub Light**, **Night**, **Newsprint**, and **Vue** — with seamless window chrome and custom scrollbars
+- **Offline Highlight.js Syntax Highlighting**: 35+ languages bundled offline with language badge and one-click code copy
+- **Rich Markdown Rendering**: GFM tables, custom checkboxes for task lists, strikethrough, GitHub/Obsidian Callout alerts (`NOTE` / `TIP` / `IMPORTANT` / `WARNING` / `CAUTION`), `==text highlight==`, YAML Front Matter toggle, local relative images with click-to-zoom lightbox, and relative `.md` link navigation
+- **Reading Productivity**: Collapsible Table of Contents sidebar with live scroll sync and word count / reading time stats, in-document find with match navigation, and live file auto-reload that preserves scroll position when edited externally
+- **Export**: Export cleanly to **PDF** or self-contained **HTML**
+- **5 Languages**: English, 简体中文, 繁體中文, 日本語, and 한국어 — follows your system language or switch live anytime
 
-已通过 Apple Developer ID 签名与公证，安装后直接双击打开：
+## Install
+
+### macOS (Homebrew — Recommended)
+
+Signed with Apple Developer ID and notarized by Apple:
 
 ```bash
 brew tap tluo-github/markread https://github.com/tluo-github/markread
 brew install --cask markread
 ```
 
-升级：`brew upgrade --cask markread` · 卸载：`brew uninstall --cask markread`
+Upgrade with `brew upgrade --cask markread`, remove with `brew uninstall --cask markread`.
 
-### 直接下载安装包（macOS & Windows）
+### Direct Download (macOS & Windows)
 
-前往 [GitHub Releases](https://github.com/tluo-github/markread/releases/latest) 下载：
+Download from [GitHub Releases](https://github.com/tluo-github/markread/releases/latest):
 
-- **macOS (Apple Silicon)**：`MarkRead-0.1.0-arm64.dmg`
-- **macOS (Intel)**：`MarkRead-0.1.0-x86_64.dmg`
-- **Windows 安装版（自动关联 `.md`）**：`MarkRead_0.1.0_x64-setup.exe` 或 `.msi`
-- **Windows 免安装便携版**：`MarkRead-portable-x64.exe`
+- **macOS (Apple Silicon)**: `MarkRead-<version>-arm64.dmg`
+- **macOS (Intel)**: `MarkRead-<version>-x86_64.dmg`
+- **Windows Installer** (auto-registers `.md` file association, no admin required): `MarkRead_<version>_x64-setup.exe` or `.msi`
+- **Windows Portable** (single-file, no installation): `MarkRead-portable-x64.exe`
 
-## 跨平台目录结构
+## Shortcuts
 
-- `shared/web/`：macOS 与 Windows 100% 共享的离线排版与语法高亮引擎（`markdown-it` + `Highlight.js` + 5 套 Typora 风格主题）
-- `MarkRead/` & `MarkReadQuickLook/`：原生 macOS SwiftUI 应用与 Finder 空格 Quick Look 预览扩展
-- `windows/`：基于 Tauri v2（Rust + 系统 WebView2）的轻量 Windows 客户端
-- `.github/workflows/build-windows.yml`：GitHub Actions 自动云编译 Windows 安装包与便携版 `.exe`
+| Action | macOS | Windows |
+| :--- | :--- | :--- |
+| Open Markdown file | `⌘O` | `Ctrl+O` |
+| Toggle Outline (TOC) | `⇧⌘O` | `Ctrl+Shift+O` |
+| Find in document | `⌘F` / `⌘G` / `⇧⌘G` | `Ctrl+F` / `F3` / `Shift+F3` |
+| Show / Hide Front Matter | `⇧⌘M` | `Ctrl+Shift+M` |
+| Zoom In / Out / Reset | `⌘+` / `⌘-` / `⌘0` | `Ctrl++` / `Ctrl+-` / `Ctrl+0` |
+| Reload file | `⌘R` | `Ctrl+R` |
+| Reveal in Finder / Explorer | `⇧⌘R` | `Ctrl+Shift+R` |
+| Export HTML | `⇧⌘E` | `Ctrl+Shift+E` |
+| Export PDF / Print | `⇧⌘P` | `Ctrl+P` |
 
-## macOS 构建与安装
+## Architecture
+
+- `shared/web/`: Single-source offline rendering engine (`markdown-it`, `Highlight.js`, `themes.css`, `renderer.js`) shared 100% by macOS and Windows
+- `MarkRead/` & `MarkReadQuickLook/`: Native macOS SwiftUI app + Finder Quick Look extension
+- `windows/`: Lightweight Windows Tauri v2 (Rust + WebView2) app
+- `.github/workflows/build-windows.yml`: Automated Windows NSIS / MSI / Portable `.exe` builds via GitHub Actions
+
+## Build from Source
+
+### macOS
+
+Requires Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen):
 
 ```bash
-chmod +x scripts/build.sh scripts/install.sh
-./scripts/build.sh --run
-
-# 安装到 /Applications、启用 Finder Quick Look 并设为 .md 默认应用
-./scripts/install.sh
+./scripts/build.sh --run     # Build & launch locally
+./scripts/install.sh         # Install to /Applications, enable Quick Look & set default .md app
+./scripts/release-macos.sh   # Build, sign, notarize & package arm64 + x86_64 DMG/ZIP
 ```
 
-或者生成 Xcode 工程后在 Xcode 中打开：
+### Windows
+
+Requires Rust stable, Node.js, and `@tauri-apps/cli@2`:
 
 ```bash
-xcodegen generate
-open MarkRead.xcodeproj
+./scripts/sync-windows-web.sh
+cd windows && tauri build
 ```
-
-## Windows 云编译（GitHub Actions）
-
-将仓库推送到 GitHub 后，`.github/workflows/build-windows.yml` 会在 `windows-latest` 上自动产出三份文件：
-
-1. **NSIS 安装包**（`MarkRead_0.1.0_x64-setup.exe`，安装时自动注册 `.md` 文件关联，无需管理员权限）
-2. **MSI 安装包**（`MarkRead_0.1.0_x64_en-US.msi`）
-3. **免安装便携版**（`MarkRead-portable-x64.exe`）
-
-- 推送到 `main` 分支或在 GitHub **Actions** 页面手动点击 **Run workflow**，即可在构建产物 **Artifacts** 中下载；
-- 推送版本标签（如 `git tag v0.1.0 && git push origin v0.1.0`），会自动创建 **GitHub Release** 并附上全部安装包。

@@ -1,0 +1,176 @@
+(function (global) {
+  "use strict";
+
+  const DICT = {
+    en: {
+      followSystem: "Follow System",
+      themeSection: "Theme",
+      themeAuto: "GitHub (Auto)",
+      widthSection: "Page Width",
+      widthNarrow: "Narrow (720px)",
+      widthStandard: "Standard (860px)",
+      widthWide: "Wide (1080px)",
+      widthFull: "Full Width",
+      langSection: "Language",
+      showFrontMatter: "Show Front Matter",
+      exportHtml: "Export as HTML…",
+      printPdf: "Print / Save as PDF…",
+      revealExplorer: "Reveal in Explorer",
+      outlineHeader: "OUTLINE",
+      noHeadings: "No Headings",
+      words: (n) => `${n} words`,
+      minRead: (n) => `~${n} min read`,
+      findPlaceholder: "Find in document…",
+      welcomeSubtitle: "Minimal, free & offline Markdown reader for Windows",
+      welcomeOpen: "Open Markdown File…",
+      welcomeSample: "Open Showcase",
+      welcomeHint: "Or drag & drop any .md file onto this window · Ctrl+O to open",
+      dropPrompt: "Drop to read Markdown",
+      tipOutline: "Toggle Outline (Ctrl+Shift+O)",
+      tipOpen: "Open Markdown File (Ctrl+O)",
+      tipFind: "Find in Document (Ctrl+F)",
+      tipAppearance: "Appearance, Themes & Export",
+    },
+    "zh-CN": {
+      followSystem: "跟随系统",
+      themeSection: "主题",
+      themeAuto: "GitHub（跟随系统）",
+      widthSection: "版心宽度",
+      widthNarrow: "窄版 (720px)",
+      widthStandard: "标准 (860px)",
+      widthWide: "宽版 (1080px)",
+      widthFull: "铺满窗口",
+      langSection: "语言",
+      showFrontMatter: "显示 Front Matter",
+      exportHtml: "导出为 HTML…",
+      printPdf: "打印 / 另存为 PDF…",
+      revealExplorer: "在资源管理器中显示",
+      outlineHeader: "目录大纲",
+      noHeadings: "暂无标题",
+      words: (n) => `${n} 字`,
+      minRead: (n) => `约 ${n} 分钟`,
+      findPlaceholder: "在文档中查找…",
+      welcomeSubtitle: "免费、离线、极简的 Windows Markdown 阅读器",
+      welcomeOpen: "打开 Markdown 文件…",
+      welcomeSample: "打开示例文档",
+      welcomeHint: "或直接拖入任意 .md 文件到此窗口 · 按 Ctrl+O 打开",
+      dropPrompt: "松开即可阅读 Markdown",
+      tipOutline: "显示/隐藏大纲 (Ctrl+Shift+O)",
+      tipOpen: "打开 Markdown 文件 (Ctrl+O)",
+      tipFind: "在文档中查找 (Ctrl+F)",
+      tipAppearance: "外观、主题与导出",
+    },
+    "zh-TW": {
+      followSystem: "跟隨系統",
+      themeSection: "主題",
+      themeAuto: "GitHub（跟隨系統）",
+      widthSection: "頁面寬度",
+      widthNarrow: "窄版 (720px)",
+      widthStandard: "標準 (860px)",
+      widthWide: "寬版 (1080px)",
+      widthFull: "填滿視窗",
+      langSection: "語言",
+      showFrontMatter: "顯示 Front Matter",
+      exportHtml: "匯出為 HTML…",
+      printPdf: "列印 / 另存為 PDF…",
+      revealExplorer: "在檔案總管中顯示",
+      outlineHeader: "目錄大綱",
+      noHeadings: "尚無標題",
+      words: (n) => `${n} 字`,
+      minRead: (n) => `約 ${n} 分鐘`,
+      findPlaceholder: "在文件中尋找…",
+      welcomeSubtitle: "免費、離線、極簡的 Windows Markdown 閱讀器",
+      welcomeOpen: "開啟 Markdown 檔案…",
+      welcomeSample: "開啟範例文件",
+      welcomeHint: "或直接拖曳任意 .md 檔案至此視窗 · 按 Ctrl+O 開啟",
+      dropPrompt: "放開即可閱讀 Markdown",
+      tipOutline: "顯示/隱藏大綱 (Ctrl+Shift+O)",
+      tipOpen: "開啟 Markdown 檔案 (Ctrl+O)",
+      tipFind: "在文件中尋找 (Ctrl+F)",
+      tipAppearance: "外觀、主題與匯出",
+    },
+    ja: {
+      followSystem: "システムに従う",
+      themeSection: "テーマ",
+      themeAuto: "GitHub（自動）",
+      widthSection: "ページ幅",
+      widthNarrow: "狭い (720px)",
+      widthStandard: "標準 (860px)",
+      widthWide: "広い (1080px)",
+      widthFull: "全幅",
+      langSection: "言語",
+      showFrontMatter: "Front Matter を表示",
+      exportHtml: "HTML として書き出す…",
+      printPdf: "印刷 / PDF として保存…",
+      revealExplorer: "エクスプローラーで表示",
+      outlineHeader: "アウトライン",
+      noHeadings: "見出しなし",
+      words: (n) => `${n} 語`,
+      minRead: (n) => `約 ${n} 分`,
+      findPlaceholder: "ドキュメント内を検索…",
+      welcomeSubtitle: "無料でオフライン動作するミニマルな Windows 用 Markdown リーダー",
+      welcomeOpen: "Markdown ファイルを開く…",
+      welcomeSample: "サンプルを開く",
+      welcomeHint: "または .md ファイルをこのウィンドウへドラッグ＆ドロップ · Ctrl+O で開く",
+      dropPrompt: "ドロップして Markdown を開く",
+      tipOutline: "アウトラインを切り替え (Ctrl+Shift+O)",
+      tipOpen: "Markdown ファイルを開く (Ctrl+O)",
+      tipFind: "ドキュメント内を検索 (Ctrl+F)",
+      tipAppearance: "外観・テーマ・書き出し",
+    },
+    ko: {
+      followSystem: "시스템 설정 따르기",
+      themeSection: "테마",
+      themeAuto: "GitHub (자동)",
+      widthSection: "페이지 너비",
+      widthNarrow: "좁게 (720px)",
+      widthStandard: "표준 (860px)",
+      widthWide: "넓게 (1080px)",
+      widthFull: "전체 너비",
+      langSection: "언어",
+      showFrontMatter: "Front Matter 표시",
+      exportHtml: "HTML로 내보내기…",
+      printPdf: "인쇄 / PDF로 저장…",
+      revealExplorer: "탐색기에서 보기",
+      outlineHeader: "개요",
+      noHeadings: "제목 없음",
+      words: (n) => `${n} 단어`,
+      minRead: (n) => `약 ${n}분`,
+      findPlaceholder: "문서에서 찾기…",
+      welcomeSubtitle: "무료 · 오프라인 미니멀 Windows Markdown 리더",
+      welcomeOpen: "Markdown 파일 열기…",
+      welcomeSample: "샘플 열기",
+      welcomeHint: "또는 .md 파일을 이 창으로 드래그 앤 드롭 · Ctrl+O로 열기",
+      dropPrompt: "놓아서 Markdown 읽기",
+      tipOutline: "개요 토글 (Ctrl+Shift+O)",
+      tipOpen: "Markdown 파일 열기 (Ctrl+O)",
+      tipFind: "문서에서 찾기 (Ctrl+F)",
+      tipAppearance: "화면 · 테마 · 내보내기",
+    },
+  };
+
+  function resolveSystemLocale() {
+    const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"];
+    for (const raw of langs) {
+      const lower = String(raw).toLowerCase();
+      if (lower.startsWith("zh-hant") || lower.startsWith("zh-tw") || lower.startsWith("zh-hk") || lower.startsWith("zh-mo")) {
+        return "zh-TW";
+      }
+      if (lower.startsWith("zh")) return "zh-CN";
+      if (lower.startsWith("ja")) return "ja";
+      if (lower.startsWith("ko")) return "ko";
+      if (lower.startsWith("en")) return "en";
+    }
+    return "en";
+  }
+
+  global.MarkReadI18n = {
+    resolve(choice) {
+      if (!choice || choice === "system") return resolveSystemLocale();
+      return DICT[choice] ? choice : "en";
+    },
+    get(choice) {
+      return DICT[this.resolve(choice)] || DICT.en;
+    },
+  };
+})(this);

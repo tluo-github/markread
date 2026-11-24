@@ -54,6 +54,7 @@ struct MarkReadApp: App {
     @FocusedValue(\.windowActions) private var windowActions
 
     private let preferences = ReaderPreferences.shared
+    private var l10n: L10n { preferences.l10n }
 
     var body: some Scene {
         WindowGroup(id: "reader", for: WindowPayload.self) { $payload in
@@ -65,24 +66,24 @@ struct MarkReadApp: App {
         .defaultSize(width: 960, height: 720)
         .commands {
             CommandGroup(replacing: .newItem) {
-                Button("Open…") {
+                Button(l10n.openMenu) {
                     windowActions?.openFile()
                 }
                 .keyboardShortcut("o", modifiers: .command)
 
-                Button("Open Showcase Document") {
+                Button(l10n.openShowcaseMenu) {
                     windowActions?.openSample()
                 }
 
                 Divider()
 
-                Button("Reload File") {
+                Button(l10n.reloadFile) {
                     windowActions?.reload()
                 }
                 .keyboardShortcut("r", modifiers: .command)
                 .disabled(!(windowActions?.hasDocument ?? false))
 
-                Button("Reveal in Finder") {
+                Button(l10n.revealInFinder) {
                     windowActions?.revealInFinder()
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
@@ -90,13 +91,13 @@ struct MarkReadApp: App {
 
                 Divider()
 
-                Button("Export as PDF…") {
+                Button(l10n.exportPDF) {
                     windowActions?.exportPDF()
                 }
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .disabled(!(windowActions?.hasDocument ?? false))
 
-                Button("Export as HTML…") {
+                Button(l10n.exportHTML) {
                     windowActions?.exportHTML()
                 }
                 .keyboardShortcut("e", modifiers: [.command, .shift])
@@ -106,62 +107,76 @@ struct MarkReadApp: App {
             CommandGroup(after: .textEditing) {
                 Divider()
 
-                Button("Find…") {
+                Button(l10n.findMenu) {
                     windowActions?.showFind()
                 }
                 .keyboardShortcut("f", modifiers: .command)
                 .disabled(!(windowActions?.hasDocument ?? false))
 
-                Button("Find Next") {
+                Button(l10n.findNext) {
                     windowActions?.findNext()
                 }
                 .keyboardShortcut("g", modifiers: .command)
                 .disabled(!(windowActions?.hasDocument ?? false))
 
-                Button("Find Previous") {
+                Button(l10n.findPrevious) {
                     windowActions?.findPrev()
                 }
                 .keyboardShortcut("g", modifiers: [.command, .shift])
                 .disabled(!(windowActions?.hasDocument ?? false))
             }
 
-            CommandMenu("View") {
-                Button("Toggle Outline") {
+            CommandMenu(l10n.viewMenu) {
+                Button(l10n.toggleOutline) {
                     windowActions?.toggleSidebar()
                 }
                 .keyboardShortcut("o", modifiers: [.command, .shift])
                 .disabled(!(windowActions?.hasDocument ?? false))
 
-                Button(preferences.showFrontMatter ? "Hide Front Matter" : "Show Front Matter") {
+                Button(preferences.showFrontMatter ? l10n.hideFrontMatter : l10n.showFrontMatter) {
                     preferences.showFrontMatter.toggle()
                 }
                 .keyboardShortcut("m", modifiers: [.command, .shift])
 
                 Divider()
 
-                Menu("Theme") {
+                Menu(l10n.themeMenu) {
                     ForEach(ReaderTheme.allCases) { theme in
                         Button {
                             preferences.theme = theme
                         } label: {
                             if preferences.theme == theme {
-                                Label(theme.displayName, systemImage: "checkmark")
+                                Label(l10n.themeName(theme), systemImage: "checkmark")
                             } else {
-                                Text(theme.displayName)
+                                Text(l10n.themeName(theme))
                             }
                         }
                     }
                 }
 
-                Menu("Page Width") {
+                Menu(l10n.pageWidthMenu) {
                     ForEach(PageWidth.allCases) { width in
                         Button {
                             preferences.pageWidth = width
                         } label: {
                             if preferences.pageWidth == width {
-                                Label(width.displayName, systemImage: "checkmark")
+                                Label(l10n.pageWidthName(width), systemImage: "checkmark")
                             } else {
-                                Text(width.displayName)
+                                Text(l10n.pageWidthName(width))
+                            }
+                        }
+                    }
+                }
+
+                Menu(l10n.languageMenu) {
+                    ForEach(AppLanguage.allCases) { lang in
+                        Button {
+                            preferences.language = lang
+                        } label: {
+                            if preferences.language == lang {
+                                Label(lang.nativeName, systemImage: "checkmark")
+                            } else {
+                                Text(lang.nativeName)
                             }
                         }
                     }
@@ -169,17 +184,17 @@ struct MarkReadApp: App {
 
                 Divider()
 
-                Button("Zoom In") {
+                Button(l10n.zoomIn) {
                     preferences.zoomIn()
                 }
                 .keyboardShortcut("+", modifiers: .command)
 
-                Button("Zoom Out") {
+                Button(l10n.zoomOut) {
                     preferences.zoomOut()
                 }
                 .keyboardShortcut("-", modifiers: .command)
 
-                Button("Actual Size") {
+                Button(l10n.actualSize) {
                     preferences.resetZoom()
                 }
                 .keyboardShortcut("0", modifiers: .command)

@@ -17,12 +17,15 @@
       return saved !== null ? parseInt(saved, 10) : 860;
     })(),
     showFrontMatter: localStorage.getItem("markread.showFrontMatter") === "true",
+    language: localStorage.getItem("markread.language") || "system",
   };
 
   let currentDoc = {
     path: null,
     title: "MarkRead",
     hasDocument: false,
+    wordCount: 0,
+    readingMinutes: 1,
     headings: [],
     activeHeadingID: null,
   };
@@ -53,12 +56,46 @@
   const menuExportHtml = document.getElementById("menu-export-html");
   const menuPrint = document.getElementById("menu-print");
   const menuReveal = document.getElementById("menu-reveal");
+  const langSelect = document.getElementById("lang-select");
+
+  function getL10n() {
+    return window.MarkReadI18n.get(prefs.language);
+  }
+
+  function getResolvedLocale() {
+    return window.MarkReadI18n.resolve(prefs.language);
+  }
 
   function savePrefs() {
     localStorage.setItem("markread.theme", prefs.theme);
     localStorage.setItem("markread.fontSize", String(prefs.fontSize));
     localStorage.setItem("markread.pageWidth", String(prefs.pageWidth));
     localStorage.setItem("markread.showFrontMatter", String(prefs.showFrontMatter));
+    localStorage.setItem("markread.language", prefs.language);
+  }
+
+  function applyI18nUI() {
+    const t = getL10n();
+    const locale = getResolvedLocale();
+    document.documentElement.setAttribute("lang", locale);
+
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (key && typeof t[key] === "string") {
+        el.textContent = t[key];
+      }
+    });
+    findInput.placeholder = t.findPlaceholder;
+    btnSidebar.title = t.tipOutline;
+    btnOpen.title = t.tipOpen;
+    btnFind.title = t.tipFind;
+    btnAppearance.title = t.tipAppearance;
+    statWords.textContent = t.words(currentDoc.wordCount);
+    statTime.textContent = t.minRead(currentDoc.readingMinutes);
+    if (langSelect) langSelect.value = prefs.language;
+    if (!currentDoc.headings.length && currentDoc.hasDocument) {
+      tocList.innerHTML = `<div class="toc-empty">${t.noHeadings}</div>`;
+    }
   }
 
   function syncMenuUI() {
@@ -73,6 +110,7 @@
     });
     menuFrontMatter.querySelector(".check").textContent = prefs.showFrontMatter ? "✓" : "";
     zoomLabel.textContent = `${prefs.fontSize}px`;
+    applyI18nUI();
   }
 
   function applyPrefsToRenderer() {
@@ -84,6 +122,7 @@
         fontSize: prefs.fontSize,
         pageWidth: prefs.pageWidth,
         showFrontMatter: prefs.showFrontMatter,
+        locale: getResolvedLocale(),
       });
     }
   }
@@ -111,7 +150,7 @@
   function renderTOC() {
     tocList.innerHTML = "";
     if (!currentDoc.headings.length) {
-      tocList.innerHTML = '<div class="toc-empty">No Headings</div>';
+      tocList.innerHTML = `<div class="toc-empty">${getL10n().noHeadings}</div>`;
       return;
     }
     const minLevel = Math.min(...currentDoc.headings.map((h) => h.level));
@@ -139,8 +178,11 @@
     currentDoc.path = doc.path || null;
     currentDoc.title = doc.title || "MarkRead";
     currentDoc.hasDocument = true;
-    statWords.textContent = `${doc.wordCount} words`;
-    statTime.textContent = `~${doc.readingMinutes} min read`;
+    currentDoc.wordCount = doc.wordCount || 0;
+    currentDoc.readingMinutes = doc.readingMinutes || 1;
+    const t = getL10n();
+    statWords.textContent = t.words(currentDoc.wordCount);
+    statTime.textContent = t.minRead(currentDoc.readingMinutes);
     updateDocumentChrome();
 
     const payload = {
@@ -149,6 +191,7 @@
       fontSize: prefs.fontSize,
       pageWidth: prefs.pageWidth,
       showFrontMatter: prefs.showFrontMatter,
+      locale: getResolvedLocale(),
       preserveScroll,
     };
 
@@ -306,6 +349,13 @@
     prefs.showFrontMatter = !prefs.showFrontMatter;
     applyPrefsToRenderer();
   });
+
+  if (langSelect) {
+    langSelect.addEventListener("change", () => {
+      prefs.language = langSelect.value;
+      applyPrefsToRenderer();
+    });
+  }
 
   document.getElementById("menu-zoom-in").addEventListener("click", () => {
     prefs.fontSize = Math.min(28, prefs.fontSize + 1);

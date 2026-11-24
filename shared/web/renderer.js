@@ -121,17 +121,76 @@
     },
   };
 
+  const WEB_STRINGS = {
+    en: {
+      copy: "Copy",
+      copied: "Copied",
+      frontMatter: "Front Matter",
+      NOTE: "Note",
+      TIP: "Tip",
+      IMPORTANT: "Important",
+      WARNING: "Warning",
+      CAUTION: "Caution",
+    },
+    "zh-CN": {
+      copy: "复制",
+      copied: "已复制",
+      frontMatter: "文档元信息",
+      NOTE: "说明",
+      TIP: "提示",
+      IMPORTANT: "重要",
+      WARNING: "警告",
+      CAUTION: "注意",
+    },
+    "zh-TW": {
+      copy: "複製",
+      copied: "已複製",
+      frontMatter: "文件元資訊",
+      NOTE: "說明",
+      TIP: "提示",
+      IMPORTANT: "重要",
+      WARNING: "警告",
+      CAUTION: "注意",
+    },
+    ja: {
+      copy: "コピー",
+      copied: "コピー済み",
+      frontMatter: "フロントマター",
+      NOTE: "メモ",
+      TIP: "ヒント",
+      IMPORTANT: "重要",
+      WARNING: "警告",
+      CAUTION: "注意",
+    },
+    ko: {
+      copy: "복사",
+      copied: "복사됨",
+      frontMatter: "문서 메타데이터",
+      NOTE: "참고",
+      TIP: "팁",
+      IMPORTANT: "중요",
+      WARNING: "경고",
+      CAUTION: "주의",
+    },
+  };
+
   let state = {
     markdown: "",
     theme: "github-auto",
     fontSize: 16,
     pageWidth: 860,
     showFrontMatter: false,
+    locale: "en",
     headings: [],
     findQuery: "",
     findMatches: [],
     findIndex: -1,
   };
+
+  function str(key) {
+    const dict = WEB_STRINGS[state.locale] || WEB_STRINGS.en;
+    return dict[key] || WEB_STRINGS.en[key] || key;
+  }
 
   function parseFrontMatter(raw) {
     const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
@@ -174,7 +233,7 @@
           `<div class="front-matter-val">${escapeHtml(item.val)}</div>`
       )
       .join("");
-    container.innerHTML = `<div class="front-matter-title">Front Matter</div><div class="front-matter-grid">${rows}</div>`;
+    container.innerHTML = `<div class="front-matter-title">${escapeHtml(str("frontMatter"))}</div><div class="front-matter-grid">${rows}</div>`;
     container.classList.remove("hidden");
   }
 
@@ -226,7 +285,9 @@
 
       const header = document.createElement("div");
       header.className = "callout-header";
-      header.innerHTML = `${meta.icon}<span>${escapeHtml(customTitle || meta.label)}</span>`;
+      header.dataset.calloutKind = kind;
+      if (!customTitle) header.dataset.calloutAuto = "1";
+      header.innerHTML = `${meta.icon}<span>${escapeHtml(customTitle || str(kind))}</span>`;
 
       const body = document.createElement("div");
       body.className = "callout-body";
@@ -328,14 +389,14 @@
       const copyBtn = document.createElement("button");
       copyBtn.type = "button";
       copyBtn.className = "code-copy-btn";
-      copyBtn.innerHTML = `${COPY_ICON}<span>Copy</span>`;
+      copyBtn.innerHTML = `${COPY_ICON}<span>${escapeHtml(str("copy"))}</span>`;
       copyBtn.addEventListener("click", () => {
         const rawText = code.innerText;
         postToHost({ type: "copyText", text: rawText });
-        copyBtn.innerHTML = `${CHECK_ICON}<span>Copied</span>`;
+        copyBtn.innerHTML = `${CHECK_ICON}<span>${escapeHtml(str("copied"))}</span>`;
         copyBtn.classList.add("copied");
         setTimeout(() => {
-          copyBtn.innerHTML = `${COPY_ICON}<span>Copy</span>`;
+          copyBtn.innerHTML = `${COPY_ICON}<span>${escapeHtml(str("copy"))}</span>`;
           copyBtn.classList.remove("copied");
         }, 1500);
       });
@@ -604,9 +665,24 @@
 
   function applyPreferences() {
     document.documentElement.setAttribute("data-theme", state.theme);
+    document.documentElement.setAttribute("lang", state.locale || "en");
     document.documentElement.style.setProperty("--font-size", `${state.fontSize}px`);
     const widthVal = state.pageWidth > 0 ? `${state.pageWidth}px` : "100%";
     document.documentElement.style.setProperty("--page-max-width", widthVal);
+  }
+
+  function refreshLocalizedDomLabels() {
+    const fmTitle = document.querySelector("#front-matter .front-matter-title");
+    if (fmTitle) fmTitle.textContent = str("frontMatter");
+    document.querySelectorAll(".code-copy-btn").forEach((btn) => {
+      const span = btn.querySelector("span");
+      if (span) span.textContent = btn.classList.contains("copied") ? str("copied") : str("copy");
+    });
+    document.querySelectorAll('.callout-header[data-callout-auto="1"]').forEach((hdr) => {
+      const kind = hdr.dataset.calloutKind;
+      const span = hdr.querySelector("span");
+      if (kind && span) span.textContent = str(kind);
+    });
   }
 
   // Public API invoked from Host (Swift WKWebView or Windows Tauri)
@@ -621,6 +697,7 @@
       if (typeof payload.showFrontMatter === "boolean") {
         state.showFrontMatter = payload.showFrontMatter;
       }
+      if (payload.locale) state.locale = payload.locale;
 
       applyPreferences();
 
@@ -654,6 +731,7 @@
       const fmChanged =
         typeof prefs.showFrontMatter === "boolean" &&
         prefs.showFrontMatter !== state.showFrontMatter;
+      const localeChanged = Boolean(prefs.locale && prefs.locale !== state.locale);
 
       if (prefs.theme) state.theme = prefs.theme;
       if (prefs.fontSize) state.fontSize = prefs.fontSize;
@@ -661,12 +739,16 @@
       if (typeof prefs.showFrontMatter === "boolean") {
         state.showFrontMatter = prefs.showFrontMatter;
       }
+      if (prefs.locale) state.locale = prefs.locale;
 
       applyPreferences();
 
       if (fmChanged) {
         const { entries } = parseFrontMatter(state.markdown);
         renderFrontMatter(entries);
+      }
+      if (localeChanged) {
+        refreshLocalizedDomLabels();
       }
     },
 

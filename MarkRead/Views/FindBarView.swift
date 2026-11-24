@@ -4,6 +4,7 @@ struct FindBarView: View {
     @Binding var query: String
     let currentMatch: Int
     let totalMatches: Int
+    let l10n: L10n
     let onSearchChanged: (String) -> Void
     let onNext: () -> Void
     let onPrev: () -> Void
@@ -17,7 +18,7 @@ struct FindBarView: View {
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
 
-            TextField("Find in document…", text: $query)
+            TextField(l10n.findPlaceholder, text: $query)
                 .textFieldStyle(.plain)
                 .font(.system(size: 13))
                 .frame(width: 190)
@@ -48,7 +49,7 @@ struct FindBarView: View {
             }
             .buttonStyle(.borderless)
             .disabled(totalMatches == 0)
-            .help("Previous Match (⇧⌘G)")
+            .help(l10n.prevMatchTip)
 
             Button(action: onNext) {
                 Image(systemName: "chevron.down")
@@ -56,14 +57,14 @@ struct FindBarView: View {
             }
             .buttonStyle(.borderless)
             .disabled(totalMatches == 0)
-            .help("Next Match (⌘G)")
+            .help(l10n.nextMatchTip)
 
             Button(action: onClose) {
                 Image(systemName: "xmark")
                     .font(.system(size: 10.5, weight: .semibold))
             }
             .buttonStyle(.borderless)
-            .help("Close Find (Esc)")
+            .help(l10n.closeFindTip)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 7)

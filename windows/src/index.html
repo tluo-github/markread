@@ -44,22 +44,33 @@
           </button>
 
           <div id="appearance-menu" class="popover-menu hidden" role="menu">
-            <div class="menu-section-label">Theme</div>
-            <button class="menu-item" data-theme-option="github-auto"><span>GitHub (Auto)</span><span class="check"></span></button>
+            <div class="menu-section-label" data-i18n="themeSection">Theme</div>
+            <button class="menu-item" data-theme-option="github-auto"><span data-i18n="themeAuto">GitHub (Auto)</span><span class="check"></span></button>
             <button class="menu-item" data-theme-option="github-light"><span>GitHub Light</span><span class="check"></span></button>
             <button class="menu-item" data-theme-option="night"><span>Night</span><span class="check"></span></button>
             <button class="menu-item" data-theme-option="newsprint"><span>Newsprint</span><span class="check"></span></button>
             <button class="menu-item" data-theme-option="vue"><span>Vue</span><span class="check"></span></button>
 
             <div class="menu-divider"></div>
-            <div class="menu-section-label">Page Width</div>
-            <button class="menu-item" data-width-option="720"><span>Narrow (720px)</span><span class="check"></span></button>
-            <button class="menu-item" data-width-option="860"><span>Standard (860px)</span><span class="check"></span></button>
-            <button class="menu-item" data-width-option="1080"><span>Wide (1080px)</span><span class="check"></span></button>
-            <button class="menu-item" data-width-option="0"><span>Full Width</span><span class="check"></span></button>
+            <div class="menu-section-label" data-i18n="widthSection">Page Width</div>
+            <button class="menu-item" data-width-option="720"><span data-i18n="widthNarrow">Narrow (720px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="860"><span data-i18n="widthStandard">Standard (860px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="1080"><span data-i18n="widthWide">Wide (1080px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="0"><span data-i18n="widthFull">Full Width</span><span class="check"></span></button>
 
             <div class="menu-divider"></div>
-            <button id="menu-frontmatter" class="menu-item"><span>Show Front Matter</span><span class="check"></span></button>
+            <div class="menu-section-label" data-i18n="langSection">Language</div>
+            <select id="lang-select" class="lang-select" aria-label="Language">
+              <option value="system" data-i18n="followSystem">Follow System</option>
+              <option value="en">English</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="zh-TW">繁體中文</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+            </select>
+
+            <div class="menu-divider"></div>
+            <button id="menu-frontmatter" class="menu-item"><span data-i18n="showFrontMatter">Show Front Matter</span><span class="check"></span></button>
 
             <div class="menu-divider"></div>
             <div class="menu-zoom-row">
@@ -69,9 +80,9 @@
             </div>
 
             <div class="menu-divider"></div>
-            <button id="menu-export-html" class="menu-item" disabled><span>Export as HTML…</span><span class="shortcut">Ctrl+Shift+E</span></button>
-            <button id="menu-print" class="menu-item" disabled><span>Print / Save as PDF…</span><span class="shortcut">Ctrl+P</span></button>
-            <button id="menu-reveal" class="menu-item" disabled><span>Reveal in Explorer</span><span class="shortcut">Ctrl+Shift+R</span></button>
+            <button id="menu-export-html" class="menu-item" disabled><span data-i18n="exportHtml">Export as HTML…</span><span class="shortcut">Ctrl+Shift+E</span></button>
+            <button id="menu-print" class="menu-item" disabled><span data-i18n="printPdf">Print / Save as PDF…</span><span class="shortcut">Ctrl+P</span></button>
+            <button id="menu-reveal" class="menu-item" disabled><span data-i18n="revealExplorer">Reveal in Explorer</span><span class="shortcut">Ctrl+Shift+R</span></button>
           </div>
         </div>
       </div>
@@ -81,7 +92,7 @@
     <div class="workspace">
       <!-- Collapsible TOC Sidebar -->
       <aside id="toc-sidebar" class="toc-sidebar hidden" aria-label="Document Outline">
-        <div class="toc-header">OUTLINE</div>
+        <div class="toc-header" data-i18n="outlineHeader">OUTLINE</div>
         <div id="toc-list" class="toc-list"></div>
         <div class="toc-footer">
           <span id="stat-words">0 words</span>
@@ -111,12 +122,12 @@
           <div class="welcome-card">
             <div class="welcome-icon">M</div>
             <h1>MarkRead</h1>
-            <p>Minimal, free &amp; offline Markdown reader for Windows</p>
+            <p data-i18n="welcomeSubtitle">Minimal, free &amp; offline Markdown reader for Windows</p>
             <div class="welcome-actions">
-              <button id="welcome-open" class="btn-primary">Open Markdown File…</button>
-              <button id="welcome-sample" class="btn-secondary">Open Showcase</button>
+              <button id="welcome-open" class="btn-primary" data-i18n="welcomeOpen">Open Markdown File…</button>
+              <button id="welcome-sample" class="btn-secondary" data-i18n="welcomeSample">Open Showcase</button>
             </div>
-            <div class="welcome-hint">Or drag &amp; drop any .md file onto this window · Ctrl+O to open</div>
+            <div class="welcome-hint" data-i18n="welcomeHint">Or drag &amp; drop any .md file onto this window · Ctrl+O to open</div>
           </div>
         </section>
 
@@ -132,7 +143,7 @@
 
     <!-- Drag & Drop Overlay -->
     <div id="drop-overlay" class="drop-overlay hidden">
-      <div class="drop-overlay-box">Drop to read Markdown</div>
+      <div class="drop-overlay-box" data-i18n="dropPrompt">Drop to read Markdown</div>
     </div>
 
     <!-- Image Lightbox -->
@@ -144,6 +155,7 @@
 
   <script src="./web/vendor/markdown-it.min.js"></script>
   <script src="./web/vendor/highlight.min.js"></script>
+  <script src="./i18n.js"></script>
   <script src="./app.js"></script>
   <script src="./web/renderer.js"></script>
 </body>

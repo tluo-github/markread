@@ -65,6 +65,8 @@ struct ReaderWindowView: View {
     private let preferences = ReaderPreferences.shared
     private let router = AppRouter.shared
 
+    private var l10n: L10n { preferences.l10n }
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             HStack(spacing: 0) {
@@ -73,7 +75,8 @@ struct ReaderWindowView: View {
                         headings: document.headings,
                         activeHeadingID: document.activeHeadingID,
                         wordCount: document.wordCount,
-                        readingMinutes: document.readingMinutes
+                        readingMinutes: document.readingMinutes,
+                        l10n: l10n
                     ) { item in
                         webController.scrollToHeading(item.id)
                     }
@@ -95,6 +98,7 @@ struct ReaderWindowView: View {
                         )
                     } else {
                         WelcomeView(
+                            l10n: l10n,
                             onOpenFile: openFilePanel,
                             onOpenSample: { document.loadSample() }
                         )
@@ -108,6 +112,7 @@ struct ReaderWindowView: View {
                     query: $findQuery,
                     currentMatch: webController.findCurrent,
                     totalMatches: webController.findTotal,
+                    l10n: l10n,
                     onSearchChanged: { webController.find($0) },
                     onNext: { webController.findNext() },
                     onPrev: { webController.findPrev() },
@@ -126,7 +131,7 @@ struct ReaderWindowView: View {
                         VStack(spacing: 8) {
                             Image(systemName: "arrow.down.doc")
                                 .font(.system(size: 32, weight: .light))
-                            Text("Drop to read Markdown")
+                            Text(l10n.dropPrompt)
                                 .font(.system(size: 14, weight: .medium))
                         }
                         .foregroundStyle(Color.accentColor)
@@ -149,7 +154,7 @@ struct ReaderWindowView: View {
                     Image(systemName: "sidebar.left")
                 }
                 .disabled(!document.hasDocument)
-                .help("Toggle Outline (⇧⌘O)")
+                .help(l10n.toggleOutlineTip)
             }
 
             ToolbarItemGroup(placement: .primaryAction) {
@@ -159,19 +164,19 @@ struct ReaderWindowView: View {
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }
-                    .help("Find in Document (⌘F)")
+                    .help(l10n.findTip)
                 }
 
                 Menu {
-                    Section("Theme") {
+                    Section(l10n.themeMenu) {
                         ForEach(ReaderTheme.allCases) { theme in
                             Button {
                                 preferences.theme = theme
                             } label: {
                                 if preferences.theme == theme {
-                                    Label(theme.displayName, systemImage: "checkmark")
+                                    Label(l10n.themeName(theme), systemImage: "checkmark")
                                 } else {
-                                    Text(theme.displayName)
+                                    Text(l10n.themeName(theme))
                                 }
                             }
                         }
@@ -179,15 +184,15 @@ struct ReaderWindowView: View {
 
                     Divider()
 
-                    Section("Page Width") {
+                    Section(l10n.pageWidthMenu) {
                         ForEach(PageWidth.allCases) { width in
                             Button {
                                 preferences.pageWidth = width
                             } label: {
                                 if preferences.pageWidth == width {
-                                    Label(width.displayName, systemImage: "checkmark")
+                                    Label(l10n.pageWidthName(width), systemImage: "checkmark")
                                 } else {
-                                    Text(width.displayName)
+                                    Text(l10n.pageWidthName(width))
                                 }
                             }
                         }
@@ -195,25 +200,39 @@ struct ReaderWindowView: View {
 
                     Divider()
 
+                    Menu(l10n.languageMenu) {
+                        ForEach(AppLanguage.allCases) { lang in
+                            Button {
+                                preferences.language = lang
+                            } label: {
+                                if preferences.language == lang {
+                                    Label(lang.nativeName, systemImage: "checkmark")
+                                } else {
+                                    Text(lang.nativeName)
+                                }
+                            }
+                        }
+                    }
+
                     Button {
                         preferences.showFrontMatter.toggle()
                     } label: {
                         if preferences.showFrontMatter {
-                            Label("Show Front Matter", systemImage: "checkmark")
+                            Label(l10n.showFrontMatter, systemImage: "checkmark")
                         } else {
-                            Text("Show Front Matter")
+                            Text(l10n.showFrontMatter)
                         }
                     }
 
                     Divider()
 
-                    Button("Zoom In (⌘+)") { preferences.zoomIn() }
-                    Button("Zoom Out (⌘-)") { preferences.zoomOut() }
-                    Button("Actual Size (⌘0)") { preferences.resetZoom() }
+                    Button("\(l10n.zoomIn) (⌘+)") { preferences.zoomIn() }
+                    Button("\(l10n.zoomOut) (⌘-)") { preferences.zoomOut() }
+                    Button("\(l10n.actualSize) (⌘0)") { preferences.resetZoom() }
                 } label: {
                     Image(systemName: "textformat.size")
                 }
-                .help("Appearance & Themes")
+                .help(l10n.appearanceTip)
             }
         }
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
@@ -264,13 +283,13 @@ struct ReaderWindowView: View {
             )
         )
         .alert(
-            "Unable to Open File",
+            l10n.openErrorTitle,
             isPresented: Binding(
                 get: { document.errorMessage != nil },
                 set: { if !$0 { document.errorMessage = nil } }
             )
         ) {
-            Button("OK", role: .cancel) {}
+            Button(l10n.okButton, role: .cancel) {}
         } message: {
             Text(document.errorMessage ?? "")
         }

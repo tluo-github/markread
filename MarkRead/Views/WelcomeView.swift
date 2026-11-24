@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    let l10n: L10n
     let onOpenFile: () -> Void
     let onOpenSample: () -> Void
 
@@ -17,14 +18,14 @@ struct WelcomeView: View {
                     .font(.system(size: 26, weight: .semibold, design: .default))
                     .tracking(-0.4)
 
-                Text("Minimal, free & offline Markdown reader for macOS")
+                Text(l10n.welcomeSubtitle)
                     .font(.system(size: 13.5))
                     .foregroundStyle(.secondary)
             }
 
             HStack(spacing: 12) {
                 Button(action: onOpenFile) {
-                    Label("Open Markdown File…", systemImage: "folder")
+                    Label(l10n.welcomeOpenButton, systemImage: "folder")
                         .font(.system(size: 13, weight: .medium))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 7)
@@ -33,7 +34,7 @@ struct WelcomeView: View {
                 .controlSize(.large)
 
                 Button(action: onOpenSample) {
-                    Text("Open Showcase")
+                    Text(l10n.welcomeSampleButton)
                         .font(.system(size: 13, weight: .medium))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
@@ -43,7 +44,7 @@ struct WelcomeView: View {
             }
             .padding(.top, 4)
 
-            Text("Or drag & drop any .md file onto this window  ·  ⌘O to open")
+            Text(l10n.welcomeHint)
                 .font(.system(size: 12))
                 .foregroundStyle(.tertiary)
                 .padding(.top, 6)

@@ -164,6 +164,20 @@ body {
   margin: 5px 4px;
 }
 
+.lang-select {
+  width: calc(100% - 8px);
+  margin: 2px 4px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-subtle);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+}
+
 .menu-zoom-row {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;

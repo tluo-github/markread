@@ -91,6 +91,14 @@ final class ReaderPreferences {
         didSet { defaults.set(showFrontMatter, forKey: "markread.showFrontMatter") }
     }
 
+    var language: AppLanguage {
+        didSet { defaults.set(language.rawValue, forKey: "markread.language") }
+    }
+
+    var l10n: L10n {
+        L10n(language)
+    }
+
     private init() {
         let savedTheme = defaults.string(forKey: "markread.theme") ?? ReaderTheme.auto.rawValue
         self.theme = ReaderTheme(rawValue: savedTheme) ?? .auto
@@ -106,6 +114,9 @@ final class ReaderPreferences {
         }
 
         self.showFrontMatter = defaults.bool(forKey: "markread.showFrontMatter")
+
+        let savedLang = defaults.string(forKey: "markread.language") ?? AppLanguage.system.rawValue
+        self.language = AppLanguage(rawValue: savedLang) ?? .system
     }
 
     func zoomIn() {

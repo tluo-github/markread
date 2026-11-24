@@ -81,6 +81,7 @@ final class WebViewController {
         fontSize: Int,
         pageWidth: PageWidth,
         showFrontMatter: Bool,
+        locale: String,
         preserveScroll: Bool
     ) {
         let payload: [String: Any] = [
@@ -89,6 +90,7 @@ final class WebViewController {
             "fontSize": fontSize,
             "pageWidth": pageWidth.rawValue,
             "showFrontMatter": showFrontMatter,
+            "locale": locale,
             "preserveScroll": preserveScroll
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: payload),
@@ -106,14 +108,16 @@ final class WebViewController {
         theme: ReaderTheme,
         fontSize: Int,
         pageWidth: PageWidth,
-        showFrontMatter: Bool
+        showFrontMatter: Bool,
+        locale: String
     ) {
         guard isPageReady else { return }
         let payload: [String: Any] = [
             "theme": theme.rawValue,
             "fontSize": fontSize,
             "pageWidth": pageWidth.rawValue,
-            "showFrontMatter": showFrontMatter
+            "showFrontMatter": showFrontMatter,
+            "locale": locale
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: payload),
               let json = String(data: data, encoding: .utf8) else { return }
@@ -224,6 +228,8 @@ struct MarkdownWebView: NSViewRepresentable {
         webView.onFileDrop = onFileDrop
         webView.onDragHoverChanged = onDragHoverChanged
 
+        let resolvedLocale = preferences.language.resolved.rawValue
+
         if context.coordinator.lastRenderVersion != document.renderVersion {
             context.coordinator.lastRenderVersion = document.renderVersion
             controller.render(
@@ -232,26 +238,31 @@ struct MarkdownWebView: NSViewRepresentable {
                 fontSize: preferences.fontSize,
                 pageWidth: preferences.pageWidth,
                 showFrontMatter: preferences.showFrontMatter,
+                locale: resolvedLocale,
                 preserveScroll: document.preserveScrollOnNextRender
             )
             context.coordinator.lastTheme = preferences.theme
             context.coordinator.lastFontSize = preferences.fontSize
             context.coordinator.lastPageWidth = preferences.pageWidth
             context.coordinator.lastShowFrontMatter = preferences.showFrontMatter
+            context.coordinator.lastLocale = resolvedLocale
         } else if context.coordinator.lastTheme != preferences.theme
             || context.coordinator.lastFontSize != preferences.fontSize
             || context.coordinator.lastPageWidth != preferences.pageWidth
             || context.coordinator.lastShowFrontMatter != preferences.showFrontMatter
+            || context.coordinator.lastLocale != resolvedLocale
         {
             context.coordinator.lastTheme = preferences.theme
             context.coordinator.lastFontSize = preferences.fontSize
             context.coordinator.lastPageWidth = preferences.pageWidth
             context.coordinator.lastShowFrontMatter = preferences.showFrontMatter
+            context.coordinator.lastLocale = resolvedLocale
             controller.updatePreferences(
                 theme: preferences.theme,
                 fontSize: preferences.fontSize,
                 pageWidth: preferences.pageWidth,
-                showFrontMatter: preferences.showFrontMatter
+                showFrontMatter: preferences.showFrontMatter,
+                locale: resolvedLocale
             )
         }
     }
@@ -265,6 +276,7 @@ struct MarkdownWebView: NSViewRepresentable {
         var lastFontSize: Int?
         var lastPageWidth: PageWidth?
         var lastShowFrontMatter: Bool?
+        var lastLocale: String?
 
         init(document: MarkdownDocumentState, controller: WebViewController) {
             self.document = document

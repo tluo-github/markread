@@ -5,9 +5,9 @@
 :root {
   --font-size: 16px;
   --page-max-width: 860px;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Noto Sans CJK SC", "Segoe UI", Helvetica, Arial, sans-serif;
   --font-serif: "New York", "Iowan Old Style", "Georgia", "Songti SC", "STSong", "Noto Serif CJK SC", serif;
-  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Monaco, Consolas, "PingFang SC", monospace;
+  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Monaco, Consolas, "PingFang SC", "Microsoft YaHei UI", monospace;
 
   /* Default: GitHub Light */
   --bg: #ffffff;
@@ -74,6 +74,21 @@
   --hljs-addition-text: #116329;
   --hljs-deletion-bg: #ffebe9;
   --hljs-deletion-text: #82071e;
+}
+
+html:lang(zh-TW) {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang TC", "Hiragino Sans CNS", "Microsoft JhengHei UI", "Noto Sans CJK TC", "Segoe UI", sans-serif;
+  --font-serif: "New York", "Iowan Old Style", "Georgia", "Songti TC", "PMingLiU", "Noto Serif CJK TC", serif;
+}
+
+html:lang(ja) {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", "Noto Sans CJK JP", "Segoe UI", sans-serif;
+  --font-serif: "New York", "Iowan Old Style", "Georgia", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+}
+
+html:lang(ko) {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", "Segoe UI", sans-serif;
+  --font-serif: "New York", "Iowan Old Style", "Georgia", "AppleMyungjo", "Batang", "Noto Serif CJK KR", serif;
 }
 
 /* GitHub Auto Dark — crisp obsidian palette matching native macOS dark reading */

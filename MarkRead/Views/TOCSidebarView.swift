@@ -5,6 +5,7 @@ struct TOCSidebarView: View {
     let activeHeadingID: String?
     let wordCount: Int
     let readingMinutes: Int
+    let l10n: L10n
     let onSelect: (TOCItem) -> Void
 
     private var minLevel: Int {
@@ -14,7 +15,7 @@ struct TOCSidebarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Outline")
+                Text(l10n.outlineTitle)
                     .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
@@ -27,7 +28,7 @@ struct TOCSidebarView: View {
             if headings.isEmpty {
                 VStack(spacing: 6) {
                     Spacer()
-                    Text("No Headings")
+                    Text(l10n.noHeadings)
                         .font(.system(size: 12.5))
                         .foregroundStyle(.tertiary)
                     Spacer()
@@ -74,9 +75,9 @@ struct TOCSidebarView: View {
             Divider()
 
             HStack {
-                Text("\(wordCount) words")
+                Text(l10n.wordsCount(wordCount))
                 Spacer()
-                Text("~\(readingMinutes) min read")
+                Text(l10n.readingMinutes(readingMinutes))
             }
             .font(.system(size: 11))
             .foregroundStyle(.secondary)

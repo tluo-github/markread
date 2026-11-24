@@ -17,8 +17,14 @@ struct WindowActions {
     let hasFileURL: Bool
 }
 
+/// Weak handle to the NSWindow hosting a reader view.
+final class WindowReference {
+    weak var window: NSWindow?
+}
+
 private struct WindowChromeSync: NSViewRepresentable {
     let backgroundColor: NSColor
+    let windowRef: WindowReference
 
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
@@ -36,6 +42,7 @@ private struct WindowChromeSync: NSViewRepresentable {
 
     private func apply(to window: NSWindow?) {
         guard let window else { return }
+        windowRef.window = window
         window.titlebarAppearsTransparent = true
         window.backgroundColor = backgroundColor
     }
@@ -61,6 +68,8 @@ struct ReaderWindowView: View {
     @State private var isFindVisible = false
     @State private var findQuery = ""
     @State private var isDropTargeted = false
+    @State private var windowID = UUID()
+    @State private var windowRef = WindowReference()
 
     private let preferences = ReaderPreferences.shared
     private let router = AppRouter.shared
@@ -141,7 +150,7 @@ struct ReaderWindowView: View {
             }
         }
         .background(preferences.theme.windowBackground)
-        .background(WindowChromeSync(backgroundColor: preferences.theme.windowNSColor))
+        .background(WindowChromeSync(backgroundColor: preferences.theme.windowNSColor, windowRef: windowRef))
         .preferredColorScheme(preferences.theme.preferredColorScheme)
         .navigationTitle(document.title)
         .toolbar {
@@ -244,12 +253,14 @@ struct ReaderWindowView: View {
             } else if let pending = router.claimInitialURL() {
                 document.load(url: pending, preserveScroll: false)
             }
+            updateEmptyWindowRegistration()
         }
-        .onChange(of: router.incomingURLForEmptyWindow) { _, newURL in
-            if let url = newURL, !document.hasDocument {
-                document.load(url: url, preserveScroll: false)
-                router.incomingURLForEmptyWindow = nil
-            }
+        .onDisappear {
+            router.unregisterEmptyWindow(windowID)
+            router.setDocumentWindow(windowID, hasDocument: false)
+        }
+        .onChange(of: document.hasDocument) { _, _ in
+            updateEmptyWindowRegistration()
         }
         .focusedSceneValue(
             \.windowActions,
@@ -322,6 +333,36 @@ struct ReaderWindowView: View {
         ]
         if panel.runModal() == .OK, let url = panel.url {
             document.load(url: url, preserveScroll: false)
+        }
+    }
+
+    /// Lets the router route Finder "open" events into this window while it shows the welcome screen.
+    private func updateEmptyWindowRegistration() {
+        router.setDocumentWindow(windowID, hasDocument: document.hasDocument)
+        if document.hasDocument {
+            router.unregisterEmptyWindow(windowID)
+        } else {
+            router.registerEmptyWindow(windowID) { [document] url in
+                document.load(url: url, preserveScroll: false)
+            }
+            closeIfRedundant()
+        }
+    }
+
+    /// During launch SwiftUI may create more than one window (default window, restored
+    /// windows, a window for the Finder open event) in an unpredictable order. A welcome
+    /// window next to a window that already shows a document is never wanted, so close it.
+    /// The delay lets SwiftUI's short-lived placeholder views disappear first, and lets a
+    /// pending open event fill this window instead.
+    private func closeIfRedundant() {
+        let id = windowID
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            guard router.isEmptyWindowRegistered(id),
+                  !document.hasDocument,
+                  !router.documentWindowIDs.subtracting([id]).isEmpty
+            else { return }
+            router.unregisterEmptyWindow(id)
+            windowRef.window?.close()
         }
     }
 

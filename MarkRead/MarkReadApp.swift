@@ -10,7 +10,12 @@ final class AppRouter {
     static let shared = AppRouter()
 
     private var initialQueue: [URL] = []
-    var incomingURLForEmptyWindow: URL?
+    /// Windows currently showing the welcome screen, keyed by a per-window ID.
+    /// External open requests fill one of these before spawning a new window.
+    private var emptyWindowLoaders: [UUID: (URL) -> Void] = [:]
+    private var emptyWindowOrder: [UUID] = []
+    /// Windows currently showing a document.
+    private(set) var documentWindowIDs: Set<UUID> = []
     var openNewWindow: ((URL) -> Void)?
 
     private init() {
@@ -27,12 +32,37 @@ final class AppRouter {
 
     func enqueueExternalURLs(_ urls: [URL]) {
         for url in urls {
-            if let openNewWindow {
+            if let id = emptyWindowOrder.first, let loader = emptyWindowLoaders[id] {
+                unregisterEmptyWindow(id)
+                loader(url)
+            } else if let openNewWindow {
                 openNewWindow(url)
             } else {
+                // No window yet (cold launch): the first window claims it on appear.
                 initialQueue.append(url)
-                incomingURLForEmptyWindow = url
             }
+        }
+    }
+
+    func registerEmptyWindow(_ id: UUID, loader: @escaping (URL) -> Void) {
+        if emptyWindowLoaders[id] == nil { emptyWindowOrder.append(id) }
+        emptyWindowLoaders[id] = loader
+    }
+
+    func unregisterEmptyWindow(_ id: UUID) {
+        emptyWindowLoaders[id] = nil
+        emptyWindowOrder.removeAll { $0 == id }
+    }
+
+    func isEmptyWindowRegistered(_ id: UUID) -> Bool {
+        emptyWindowLoaders[id] != nil
+    }
+
+    func setDocumentWindow(_ id: UUID, hasDocument: Bool) {
+        if hasDocument {
+            documentWindowIDs.insert(id)
+        } else {
+            documentWindowIDs.remove(id)
         }
     }
 
@@ -209,6 +239,9 @@ private struct ReaderWindowHost: View {
 
     var body: some View {
         ReaderWindowView(initialURL: initialURL)
+            // Finder "open" events are routed by AppDelegate/AppRouter. Without this,
+            // SwiftUI also spawns an extra empty window for every external open event.
+            .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
             .onAppear {
                 AppRouter.shared.openNewWindow = { url in
                     openWindow(id: "reader", value: WindowPayload(url: url))

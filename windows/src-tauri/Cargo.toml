@@ -1,6 +1,6 @@
 [package]
 name = "markread"
-version = "0.1.1"
+version = "0.1.2"
 description = "MarkRead — Minimal, free & offline Markdown reader inspired by Typora"
 authors = ["MarkRead"]
 edition = "2021"

@@ -1,0 +1,7 @@
+.DS_Store
+.build/
+MarkRead.xcodeproj/
+xcuserdata/
+*.xcuserstate
+windows/src/web/
+windows/src-tauri/target/

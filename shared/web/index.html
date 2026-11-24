@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="github-auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarkRead</title>
+  <link rel="stylesheet" href="./themes.css" />
+</head>
+<body>
+  <div id="reading-progress" aria-hidden="true"></div>
+  <main id="page" class="page-container">
+    <section id="front-matter" class="front-matter hidden" aria-label="Document Metadata"></section>
+    <article id="content" class="markdown-body"></article>
+  </main>
+
+  <div id="image-lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Image Preview">
+    <img id="lightbox-img" alt="" />
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+
+  <script src="./vendor/markdown-it.min.js"></script>
+  <script src="./vendor/highlight.min.js"></script>
+  <script src="./renderer.js"></script>
+</body>
+</html>

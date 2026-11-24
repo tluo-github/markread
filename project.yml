@@ -1,0 +1,69 @@
+name: MarkRead
+options:
+  bundleIdPrefix: com.markread
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.9"
+
+targets:
+  MarkRead:
+    type: application
+    platform: macOS
+    sources:
+      - path: MarkRead
+        excludes:
+          - Info.plist
+      - path: shared/Sample.md
+        buildPhase: resources
+      - path: shared/web
+        buildPhase: resources
+        type: folder
+    dependencies:
+      - target: MarkReadQuickLook
+        embed: true
+        codeSign: true
+    settings:
+      base:
+        PRODUCT_NAME: MarkRead
+        PRODUCT_BUNDLE_IDENTIFIER: com.markread.app
+        INFOPLIST_FILE: MarkRead/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: NO
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        COMBINE_HIDPI_IMAGES: YES
+
+  MarkReadQuickLook:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: MarkReadQuickLook
+        excludes:
+          - Info.plist
+          - MarkReadQuickLook.entitlements
+      - path: shared/web
+        buildPhase: resources
+        type: folder
+    settings:
+      base:
+        PRODUCT_NAME: MarkReadQuickLook
+        PRODUCT_BUNDLE_IDENTIFIER: com.markread.app.quicklook
+        INFOPLIST_FILE: MarkReadQuickLook/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MarkReadQuickLook/MarkReadQuickLook.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_HARDENED_RUNTIME: NO
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES

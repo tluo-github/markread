@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="github-auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarkRead</title>
+  <link rel="stylesheet" href="./web/themes.css" />
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div id="app-shell" class="app-shell">
+    <!-- Minimal Unified Top Bar -->
+    <header class="topbar" role="toolbar" aria-label="Reader Toolbar">
+      <div class="topbar-left">
+        <button id="btn-sidebar" class="icon-btn" title="Toggle Outline (Ctrl+Shift+O)" disabled>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2.5" width="12" height="11" rx="1.8"/>
+            <line x1="6" y1="2.5" x2="6" y2="13.5"/>
+          </svg>
+        </button>
+        <button id="btn-open" class="icon-btn" title="Open Markdown File (Ctrl+O)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4.2A1.2 1.2 0 0 1 3.2 3h3l1.3 1.5h5.3A1.2 1.2 0 0 1 14 5.7v6.1a1.2 1.2 0 0 1-1.2 1.2H3.2A1.2 1.2 0 0 1 2 11.8V4.2Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="doc-title" class="topbar-title">MarkRead</div>
+
+      <div class="topbar-right">
+        <button id="btn-find" class="icon-btn" title="Find in Document (Ctrl+F)" disabled>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7.2" cy="7.2" r="4.6"/>
+            <line x1="10.6" y1="10.6" x2="14" y2="14"/>
+          </svg>
+        </button>
+
+        <div class="menu-anchor">
+          <button id="btn-appearance" class="icon-btn" title="Appearance, Themes & Export">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.2 12.2 5.4 3.8h1.1l3.2 8.4M3.4 9.5h5.1"/>
+              <path d="M10.5 12.2 12.3 7.5h.7l1.8 4.7M11.1 10.6h3"/>
+            </svg>
+          </button>
+
+          <div id="appearance-menu" class="popover-menu hidden" role="menu">
+            <div class="menu-section-label">Theme</div>
+            <button class="menu-item" data-theme-option="github-auto"><span>GitHub (Auto)</span><span class="check"></span></button>
+            <button class="menu-item" data-theme-option="github-light"><span>GitHub Light</span><span class="check"></span></button>
+            <button class="menu-item" data-theme-option="night"><span>Night</span><span class="check"></span></button>
+            <button class="menu-item" data-theme-option="newsprint"><span>Newsprint</span><span class="check"></span></button>
+            <button class="menu-item" data-theme-option="vue"><span>Vue</span><span class="check"></span></button>
+
+            <div class="menu-divider"></div>
+            <div class="menu-section-label">Page Width</div>
+            <button class="menu-item" data-width-option="720"><span>Narrow (720px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="860"><span>Standard (860px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="1080"><span>Wide (1080px)</span><span class="check"></span></button>
+            <button class="menu-item" data-width-option="0"><span>Full Width</span><span class="check"></span></button>
+
+            <div class="menu-divider"></div>
+            <button id="menu-frontmatter" class="menu-item"><span>Show Front Matter</span><span class="check"></span></button>
+
+            <div class="menu-divider"></div>
+            <div class="menu-zoom-row">
+              <button id="menu-zoom-out" class="zoom-btn" title="Zoom Out (Ctrl+-)">A-</button>
+              <button id="menu-zoom-reset" class="zoom-btn" title="Actual Size (Ctrl+0)"><span id="zoom-label">16px</span></button>
+              <button id="menu-zoom-in" class="zoom-btn" title="Zoom In (Ctrl+=)">A+</button>
+            </div>
+
+            <div class="menu-divider"></div>
+            <button id="menu-export-html" class="menu-item" disabled><span>Export as HTML…</span><span class="shortcut">Ctrl+Shift+E</span></button>
+            <button id="menu-print" class="menu-item" disabled><span>Print / Save as PDF…</span><span class="shortcut">Ctrl+P</span></button>
+            <button id="menu-reveal" class="menu-item" disabled><span>Reveal in Explorer</span><span class="shortcut">Ctrl+Shift+R</span></button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+      <!-- Collapsible TOC Sidebar -->
+      <aside id="toc-sidebar" class="toc-sidebar hidden" aria-label="Document Outline">
+        <div class="toc-header">OUTLINE</div>
+        <div id="toc-list" class="toc-list"></div>
+        <div class="toc-footer">
+          <span id="stat-words">0 words</span>
+          <span id="stat-time">~1 min read</span>
+        </div>
+      </aside>
+
+      <!-- Reader Area -->
+      <div class="reader-stage">
+        <div id="reading-progress" aria-hidden="true"></div>
+
+        <!-- Floating Find Bar -->
+        <div id="find-bar" class="find-bar hidden" role="search">
+          <svg class="find-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="7" cy="7" r="4.5"/>
+            <line x1="10.4" y1="10.4" x2="13.8" y2="13.8"/>
+          </svg>
+          <input id="find-input" type="text" placeholder="Find in document…" spellcheck="false" />
+          <span id="find-count" class="find-count"></span>
+          <button id="find-prev" class="find-nav-btn" title="Previous Match (Shift+Enter)">▲</button>
+          <button id="find-next" class="find-nav-btn" title="Next Match (Enter)">▼</button>
+          <button id="find-close" class="find-nav-btn" title="Close (Esc)">✕</button>
+        </div>
+
+        <!-- Welcome Empty State -->
+        <section id="welcome-view" class="welcome-view">
+          <div class="welcome-card">
+            <div class="welcome-icon">M</div>
+            <h1>MarkRead</h1>
+            <p>Minimal, free &amp; offline Markdown reader for Windows</p>
+            <div class="welcome-actions">
+              <button id="welcome-open" class="btn-primary">Open Markdown File…</button>
+              <button id="welcome-sample" class="btn-secondary">Open Showcase</button>
+            </div>
+            <div class="welcome-hint">Or drag &amp; drop any .md file onto this window · Ctrl+O to open</div>
+          </div>
+        </section>
+
+        <!-- Scrollable Document Canvas (uses shared/web/themes.css & renderer.js) -->
+        <div id="reader-scroll" class="reader-scroll hidden">
+          <main id="page" class="page-container">
+            <section id="front-matter" class="front-matter hidden" aria-label="Document Metadata"></section>
+            <article id="content" class="markdown-body"></article>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="drop-overlay" class="drop-overlay hidden">
+      <div class="drop-overlay-box">Drop to read Markdown</div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div id="image-lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Image Preview">
+      <img id="lightbox-img" alt="" />
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <script src="./web/vendor/markdown-it.min.js"></script>
+  <script src="./web/vendor/highlight.min.js"></script>
+  <script src="./app.js"></script>
+  <script src="./web/renderer.js"></script>
+</body>
+</html>

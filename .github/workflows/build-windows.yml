@@ -1,0 +1,70 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Sync shared web renderer into Windows frontend
+        shell: pwsh
+        run: |
+          if (Test-Path "windows/src/web") {
+            Remove-Item -Recurse -Force "windows/src/web"
+          }
+          New-Item -ItemType Directory -Force -Path "windows/src/web" | Out-Null
+          Copy-Item -Recurse -Force "shared/web/*" "windows/src/web/"
+
+      - name: Setup Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: windows/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Tauri v2 CLI
+        run: npm install -g @tauri-apps/cli@2
+
+      - name: Build MarkRead Windows Installer (NSIS & MSI)
+        working-directory: windows
+        run: tauri build
+
+      - name: Collect release artifacts (Installer + Portable EXE)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "dist-windows" | Out-Null
+          Copy-Item "windows/src-tauri/target/release/bundle/nsis/*.exe" "dist-windows/"
+          Copy-Item "windows/src-tauri/target/release/bundle/msi/*.msi" "dist-windows/"
+          Copy-Item "windows/src-tauri/target/release/markread.exe" "dist-windows/MarkRead-portable-x64.exe"
+          Get-ChildItem "dist-windows"
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MarkRead-Windows-x64
+          path: dist-windows/*
+          retention-days: 30
+
+      - name: Create GitHub Release (on version tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-windows/*
+          generate_release_notes: true

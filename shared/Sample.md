@@ -1,13 +1,13 @@
 ---
 title: MarkRead Showcase
-version: 0.1.2
+version: 0.1.3
 license: Free & Offline
 author: MarkRead
 ---
 
 # Welcome to MarkRead
 
-**MarkRead 0.1.2** — A minimal, native macOS Markdown reader inspired by Typora's typography aesthetics.
+**MarkRead 0.1.3** — A minimal, native macOS Markdown reader inspired by Typora's typography aesthetics.
 
 Open any `.md` file from Finder, drag and drop it onto this window, or press `⌘O` to start reading immediately.
 

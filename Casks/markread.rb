@@ -1,16 +1,16 @@
 cask "markread" do
   arch arm: "arm64", intel: "x86_64"
 
-  version "0.1.3"
-  sha256 arm:   "132228cad1ef6a381285b7693f743c9382d510142216ff5cd0f22def86e22397",
-         intel: "16a5111ca04308375b2c320d8b1b3b7be79156e4a82a2bcc987a4c4663ea2c2b"
+  version "0.1.4"
+  sha256 arm:   "ad1d97bf415dd55dfaaa65245256bee98da583568cef28ee2dec3eaa1e35e321",
+         intel: "9373084d4e226ad8252abf58e979b4ab8b721b013594ad2034cfb41a9474f3f1"
 
   url "https://github.com/tluo-github/markread/releases/download/v#{version}/MarkRead-#{version}-#{arch}.zip"
   name "MarkRead"
   desc "Minimal, free and offline Markdown reader with Highlight.js syntax highlighting and Quick Look"
   homepage "https://github.com/tluo-github/markread"
 
-  depends_on macos: :sonoma
+  depends_on macos: ">= :ventura"
 
   app "MarkRead.app"
 

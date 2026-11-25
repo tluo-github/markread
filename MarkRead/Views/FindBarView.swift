@@ -23,7 +23,7 @@ struct FindBarView: View {
                 .font(.system(size: 13))
                 .frame(width: 190)
                 .focused($isFocused)
-                .onChange(of: query) { _, newValue in
+                .onChange(of: query) { newValue in
                     onSearchChanged(newValue)
                 }
                 .onSubmit {

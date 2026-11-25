@@ -3,14 +3,13 @@ import SwiftUI
 import UniformTypeIdentifiers
 import WebKit
 
-@Observable
-final class WebViewController {
+final class WebViewController: ObservableObject {
     fileprivate weak var webView: WKWebView?
     fileprivate var isPageReady = false
     fileprivate var pendingRenderJS: String?
 
-    var findTotal: Int = 0
-    var findCurrent: Int = 0
+    @Published var findTotal: Int = 0
+    @Published var findCurrent: Int = 0
 
     func evaluate(_ js: String) {
         webView?.evaluateJavaScript(js, completionHandler: nil)
@@ -188,8 +187,8 @@ final class DropAwareWebView: WKWebView {
 }
 
 struct MarkdownWebView: NSViewRepresentable {
-    let document: MarkdownDocumentState
-    let preferences: ReaderPreferences
+    @ObservedObject var document: MarkdownDocumentState
+    @ObservedObject var preferences: ReaderPreferences
     let controller: WebViewController
     let onFileDrop: (URL) -> Void
     let onDragHoverChanged: (Bool) -> Void

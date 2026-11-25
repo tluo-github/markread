@@ -62,8 +62,8 @@ extension FocusedValues {
 struct ReaderWindowView: View {
     let initialURL: URL?
 
-    @State private var document = MarkdownDocumentState()
-    @State private var webController = WebViewController()
+    @StateObject private var document = MarkdownDocumentState()
+    @StateObject private var webController = WebViewController()
     @State private var showSidebar = false
     @State private var isFindVisible = false
     @State private var findQuery = ""
@@ -71,7 +71,7 @@ struct ReaderWindowView: View {
     @State private var windowID = UUID()
     @State private var windowRef = WindowReference()
 
-    private let preferences = ReaderPreferences.shared
+    @ObservedObject private var preferences = ReaderPreferences.shared
     private let router = AppRouter.shared
 
     private var l10n: L10n { preferences.l10n }
@@ -259,7 +259,7 @@ struct ReaderWindowView: View {
             router.unregisterEmptyWindow(windowID)
             router.setDocumentWindow(windowID, hasDocument: false)
         }
-        .onChange(of: document.hasDocument) { _, _ in
+        .onChange(of: document.hasDocument) { _ in
             updateEmptyWindowRegistration()
         }
         .focusedSceneValue(
@@ -342,8 +342,9 @@ struct ReaderWindowView: View {
         if document.hasDocument {
             router.unregisterEmptyWindow(windowID)
         } else {
-            router.registerEmptyWindow(windowID) { [document] url in
-                document.load(url: url, preserveScroll: false)
+            let doc = document
+            router.registerEmptyWindow(windowID) { url in
+                doc.load(url: url, preserveScroll: false)
             }
             closeIfRedundant()
         }
@@ -356,13 +357,15 @@ struct ReaderWindowView: View {
     /// pending open event fill this window instead.
     private func closeIfRedundant() {
         let id = windowID
+        let doc = document
+        let ref = windowRef
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             guard router.isEmptyWindowRegistered(id),
-                  !document.hasDocument,
+                  !doc.hasDocument,
                   !router.documentWindowIDs.subtracting([id]).isEmpty
             else { return }
             router.unregisterEmptyWindow(id)
-            windowRef.window?.close()
+            ref.window?.close()
         }
     }
 

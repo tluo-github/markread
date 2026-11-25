@@ -5,7 +5,6 @@ struct WindowPayload: Codable, Hashable {
     let url: URL?
 }
 
-@Observable
 final class AppRouter {
     static let shared = AppRouter()
 
@@ -83,7 +82,7 @@ struct MarkReadApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @FocusedValue(\.windowActions) private var windowActions
 
-    private let preferences = ReaderPreferences.shared
+    @ObservedObject private var preferences = ReaderPreferences.shared
     private var l10n: L10n { preferences.l10n }
 
     var body: some Scene {

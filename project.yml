@@ -2,7 +2,7 @@ name: MarkRead
 options:
   bundleIdPrefix: com.markread
   deploymentTarget:
-    macOS: "14.0"
+    macOS: "13.0"
   xcodeVersion: "16.0"
 
 settings:
@@ -34,7 +34,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.markread.app
         INFOPLIST_FILE: MarkRead/Info.plist
         GENERATE_INFOPLIST_FILE: NO
-        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
         ENABLE_APP_SANDBOX: NO
         ENABLE_HARDENED_RUNTIME: NO
         CODE_SIGN_IDENTITY: "-"
@@ -61,7 +61,7 @@ targets:
         INFOPLIST_FILE: MarkReadQuickLook/Info.plist
         CODE_SIGN_ENTITLEMENTS: MarkReadQuickLook/MarkReadQuickLook.entitlements
         GENERATE_INFOPLIST_FILE: NO
-        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
         ENABLE_APP_SANDBOX: YES
         ENABLE_HARDENED_RUNTIME: NO
         CODE_SIGN_IDENTITY: "-"

@@ -69,29 +69,28 @@ enum PageWidth: Int, CaseIterable, Identifiable {
     }
 }
 
-@Observable
-final class ReaderPreferences {
+final class ReaderPreferences: ObservableObject {
     static let shared = ReaderPreferences()
 
     private let defaults = UserDefaults.standard
 
-    var theme: ReaderTheme {
+    @Published var theme: ReaderTheme {
         didSet { defaults.set(theme.rawValue, forKey: "markread.theme") }
     }
 
-    var fontSize: Int {
+    @Published var fontSize: Int {
         didSet { defaults.set(fontSize, forKey: "markread.fontSize") }
     }
 
-    var pageWidth: PageWidth {
+    @Published var pageWidth: PageWidth {
         didSet { defaults.set(pageWidth.rawValue, forKey: "markread.pageWidth") }
     }
 
-    var showFrontMatter: Bool {
+    @Published var showFrontMatter: Bool {
         didSet { defaults.set(showFrontMatter, forKey: "markread.showFrontMatter") }
     }
 
-    var language: AppLanguage {
+    @Published var language: AppLanguage {
         didSet { defaults.set(language.rawValue, forKey: "markread.language") }
     }
 

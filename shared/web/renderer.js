@@ -27,7 +27,7 @@
     if (el) {
       el.scrollTop = y;
     } else {
-      window.scrollTo({ top: y, behavior: "instant" });
+      window.scrollTo(0, y);
     }
   };
 

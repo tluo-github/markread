@@ -1,17 +1,17 @@
+import Combine
 import Foundation
 
-@Observable
-final class MarkdownDocumentState {
-    var fileURL: URL?
-    var content: String = ""
-    var title: String = "MarkRead"
-    var headings: [TOCItem] = []
-    var activeHeadingID: String?
-    var wordCount: Int = 0
-    var readingMinutes: Int = 1
-    var errorMessage: String?
-    var isSample: Bool = false
-    var renderVersion: UUID = UUID()
+final class MarkdownDocumentState: ObservableObject {
+    @Published var fileURL: URL?
+    @Published var content: String = ""
+    @Published var title: String = "MarkRead"
+    @Published var headings: [TOCItem] = []
+    @Published var activeHeadingID: String?
+    @Published var wordCount: Int = 0
+    @Published var readingMinutes: Int = 1
+    @Published var errorMessage: String?
+    @Published var isSample: Bool = false
+    @Published var renderVersion: UUID = UUID()
     var preserveScrollOnNextRender: Bool = false
 
     private var fileWatcher: FileWatcher?
